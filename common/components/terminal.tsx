@@ -103,7 +103,15 @@ export default function Terminal() {
 
   const logs = terminalLog.map((log, i) => {
     console.log(log.message.length);
+    if(log.message.length === 1) {
     return <span key={i}>{log.message}</span>;
+    } else {
+        return <div>
+            {log.message.map((message, y) => {
+                <span key={i+','+y}>{message}</span>
+            })}
+        </div>
+    }
   });
 
   return (
