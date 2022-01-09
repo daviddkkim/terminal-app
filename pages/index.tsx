@@ -1,9 +1,13 @@
+/** @jsxRuntime classic */
+/** @jsx jsx */
+
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import useSWR from "swr";
 import React from "react";
 import Terminal from "../common/components/terminal";
+import { jsx, css } from "@emotion/react";
 
 const UseDirectory = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -13,6 +17,17 @@ const UseDirectory = () => {
 };
 
 const Home: NextPage = () => {
+  const gradientBackground = css({
+    width: "100%",
+    height: "100vh",
+    background:
+      "conic-gradient(from 217.29deg at 51.63% 52.16%,#2400ff 0deg,#0087ff 19.5deg,#ff1d7a 102.75deg,#f5381b 152.25deg,#ff5335 208.88deg,#691eff 291deg)",
+    padding: "100px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    //backgroundImage: 'linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%)'
+  });
   const [shouldRender, setShouldRender] = React.useState(false);
 
   return (
@@ -23,7 +38,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <main css={gradientBackground}>
         <Terminal />
         <div>
           <button

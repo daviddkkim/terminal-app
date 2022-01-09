@@ -3,10 +3,16 @@
 
 import React, { useState } from "react";
 import { jsx, css } from "@emotion/react";
+import useSWR from "swr";
+import fetcher from "../util/fetcher";
 
-type terminalProps = {};
 type terminalInputProps = {
   onKeyDown: Function;
+};
+
+type TerminalLog = {
+  message: string[];
+  messageType: "Argument" | "Response" | "";
 };
 
 function TerminalInput(props: terminalInputProps) {
@@ -33,10 +39,29 @@ function TerminalInput(props: terminalInputProps) {
   });
 
   const [inputValue, setInputValue] = useState("");
+  const { data } = useSWR(`/api/directory`, fetcher);
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      props.onKeyDown(inputValue);
+      const argumentLog: TerminalLog = {
+        message: [inputValue],
+        messageType: "Argument",
+      };
+      props.onKeyDown([argumentLog]);
+
+      if (inputValue.toLowerCase() === "ls") {
+        const responseMessage = data.map(
+          (object: { id: number; name: any }) => {
+            return object.name;
+          }
+        );
+        const responseLog: TerminalLog = {
+          message: responseMessage,
+          messageType: "Response",
+        };
+        props.onKeyDown([argumentLog, responseLog]);
+      }
+
       setInputValue("");
     }
   };
@@ -54,23 +79,31 @@ function TerminalInput(props: terminalInputProps) {
   );
 }
 
-export default function Terminal(props: terminalProps) {
+export default function Terminal() {
   const terminalContainer = css({
-    width: "100%",
-    height: "70vh",
+    width: "920px",
+    height: "720px",
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#171717",
+    backgroundColor: "rgba(0,0,0,0.85)",
     color: "white",
+    borderRadius: "5px",
+    padding: "8px",
   });
 
-  const [terminalLog, setTerminalLog] = useState([""]);
-  const handleSubmit = (value: string) => {
-    setTerminalLog([...terminalLog, value]);
+  const [terminalLog, setTerminalLog] = useState<TerminalLog[]>([
+    {
+      message: [""],
+      messageType: "",
+    },
+  ]);
+  const handleSubmit = (value: TerminalLog[]) => {
+    setTerminalLog([...terminalLog, ...value]);
   };
 
   const logs = terminalLog.map((log, i) => {
-    return <span key={i}>{log}</span>;
+    console.log(log.message.length);
+    return <span key={i}>{log.message}</span>;
   });
 
   return (
