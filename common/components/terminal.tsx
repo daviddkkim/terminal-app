@@ -38,7 +38,6 @@ function TerminalInput(props: terminalInputProps) {
     if (e.key === "Enter") {
       props.onKeyDown(inputValue);
       setInputValue("");
-      s;
     }
   };
   return (
