@@ -9,13 +9,6 @@ import React from "react";
 import Terminal from "../common/components/terminal";
 import { jsx, css } from "@emotion/react";
 
-const UseDirectory = () => {
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data } = useSWR(`/api/directory`, fetcher);
-
-  return <>{JSON.stringify(data)}</>;
-};
-
 const Home: NextPage = () => {
   const gradientBackground = css({
     width: "100%",
@@ -28,7 +21,6 @@ const Home: NextPage = () => {
     alignItems: "center",
     //backgroundImage: 'linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%)'
   });
-  const [shouldRender, setShouldRender] = React.useState(false);
 
   return (
     <div>
@@ -40,16 +32,6 @@ const Home: NextPage = () => {
 
       <main css={gradientBackground}>
         <Terminal />
-        <div>
-          <button
-            onClick={() => {
-              setShouldRender(true);
-            }}
-          >
-            {"Get Directory"}
-          </button>
-          {shouldRender && <UseDirectory />}
-        </div>
       </main>
 
       <footer>

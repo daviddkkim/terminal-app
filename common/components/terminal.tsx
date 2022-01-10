@@ -39,28 +39,10 @@ function TerminalInput(props: terminalInputProps) {
   });
 
   const [inputValue, setInputValue] = useState("");
-  const { data } = useSWR(`/api/directory`, fetcher);
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      const argumentLog: TerminalLog = {
-        message: [inputValue],
-        messageType: "Argument",
-      };
-      props.onKeyDown([argumentLog]);
-
-      if (inputValue.toLowerCase() === "ls") {
-        const responseMessage = data.map(
-          (object: { id: number; name: any }) => {
-            return object.name;
-          }
-        );
-        const responseLog: TerminalLog = {
-          message: responseMessage,
-          messageType: "Response",
-        };
-        props.onKeyDown([argumentLog, responseLog]);
-      }
+      props.onKeyDown(inputValue);
 
       setInputValue("");
     }
@@ -91,26 +73,68 @@ export default function Terminal() {
     padding: "8px",
   });
 
+  const terminalLogMessageContainer = css({
+    display: "flex",
+    columnGap: "8px",
+  });
+
+  const argumentMessageIcon = css({
+    color: "#49fb35",
+  });
+
+  const folderMessageColor = css({
+    color: "#00ffff",
+  });
+
+  const { data } = useSWR(`/api/directory`, fetcher);
   const [terminalLog, setTerminalLog] = useState<TerminalLog[]>([
     {
       message: [""],
       messageType: "",
     },
   ]);
-  const handleSubmit = (value: TerminalLog[]) => {
-    setTerminalLog([...terminalLog, ...value]);
+  const handleSubmit = (value: string) => {
+    const argumentLog: TerminalLog = {
+      message: [value],
+      messageType: "Argument",
+    };
+
+    if (value.toLowerCase() === "ls") {
+      const responseMessage = data.map((object: { id: number; name: any }) => {
+        return object.name;
+      });
+      const responseLog: TerminalLog = {
+        message: responseMessage,
+        messageType: "Response",
+      };
+      setTerminalLog([...terminalLog, argumentLog, responseLog]);
+    } else if (value.toLowerCase() === "clear") {
+      setTerminalLog([]);
+    } else {
+      setTerminalLog([...terminalLog, argumentLog]);
+    }
   };
 
   const logs = terminalLog.map((log, i) => {
-    console.log(log.message.length);
-    if(log.message.length === 1) {
-    return <span key={i}>{log.message}</span>;
-    } else {
-        return <div>
-            {log.message.map((message, y) => {
-                <span key={i+','+y}>{message}</span>
-            })}
+    if (log.messageType === "Argument") {
+      return (
+        <div css={terminalLogMessageContainer}>
+          <div css={argumentMessageIcon}> &#60; </div>
+          <span key={i}>{log.message}</span>
         </div>
+      );
+    } else {
+      return (
+        <div key={i} css={terminalLogMessageContainer}>
+          {log.message.map((message, y) => {
+            return (
+              <span css={folderMessageColor} key={i + "," + y}>
+                {message}
+              </span>
+            );
+          })}
+        </div>
+      );
     }
   });
 
