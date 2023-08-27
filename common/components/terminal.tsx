@@ -1,10 +1,10 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import React, { useState } from "react";
-import { jsx, css } from "@emotion/react";
-import useSWR from "swr";
-import fetcher from "../util/fetcher";
+import { css } from '@emotion/react';
+import React, { useState } from 'react';
+import useSWR from 'swr';
+import fetcher from '../util/fetcher';
 
 type terminalInputProps = {
   onKeyDown: Function;
@@ -12,39 +12,39 @@ type terminalInputProps = {
 
 type TerminalLog = {
   message: string[];
-  messageType: "Argument" | "Response" | "";
+  messageType: 'Argument' | 'Response' | '';
 };
 
 function TerminalInput(props: terminalInputProps) {
   const inputStyle = css({
-    outline: "none",
-    border: "none",
-    backgroundImage: "none",
-    backgroundColor: "transparent",
-    webkitBoxShadow: "none",
-    mozBoxShadow: "none",
-    boxShadow: "none",
-    color: "white",
-    width: "100%",
+    outline: 'none',
+    border: 'none',
+    backgroundImage: 'none',
+    backgroundColor: 'transparent',
+    webkitBoxShadow: 'none',
+    mozBoxShadow: 'none',
+    boxShadow: 'none',
+    color: 'white',
+    width: '100%'
   });
 
   const containerStyle = css({
-    display: "flex",
+    display: 'flex'
   });
 
   const locationBlock = css({
-    margin: "2px",
-    padding: "0px 4px",
-    backgroundColor: "gray",
+    margin: '2px',
+    padding: '0px 4px',
+    backgroundColor: 'gray'
   });
 
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       props.onKeyDown(inputValue);
 
-      setInputValue("");
+      setInputValue('');
     }
   };
   return (
@@ -53,8 +53,8 @@ function TerminalInput(props: terminalInputProps) {
       <input
         css={inputStyle}
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={(e) => handleEnter(e)}
+        onChange={e => setInputValue(e.target.value)}
+        onKeyDown={e => handleEnter(e)}
       />
       <div></div>
     </div>
@@ -63,52 +63,52 @@ function TerminalInput(props: terminalInputProps) {
 
 export default function Terminal() {
   const terminalContainer = css({
-    width: "920px",
-    height: "720px",
-    display: "flex",
-    flexDirection: "column",
-    backgroundColor: "rgba(0,0,0,0.85)",
-    color: "white",
-    borderRadius: "5px",
-    padding: "8px",
+    width: '920px',
+    height: '720px',
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    color: 'white',
+    borderRadius: '5px',
+    padding: '8px'
   });
 
   const terminalLogMessageContainer = css({
-    display: "flex",
-    columnGap: "8px",
+    display: 'flex',
+    columnGap: '8px'
   });
 
   const argumentMessageIcon = css({
-    color: "#49fb35",
+    color: '#49fb35'
   });
 
   const folderMessageColor = css({
-    color: "#00ffff",
+    color: '#00ffff'
   });
 
   const { data } = useSWR(`/api/directory`, fetcher);
   const [terminalLog, setTerminalLog] = useState<TerminalLog[]>([
     {
-      message: [""],
-      messageType: "",
-    },
+      message: [''],
+      messageType: ''
+    }
   ]);
   const handleSubmit = (value: string) => {
     const argumentLog: TerminalLog = {
       message: [value],
-      messageType: "Argument",
+      messageType: 'Argument'
     };
 
-    if (value.toLowerCase() === "ls") {
+    if (value.toLowerCase() === 'ls') {
       const responseMessage = data.map((object: { id: number; name: any }) => {
         return object.name;
       });
       const responseLog: TerminalLog = {
         message: responseMessage,
-        messageType: "Response",
+        messageType: 'Response'
       };
       setTerminalLog([...terminalLog, argumentLog, responseLog]);
-    } else if (value.toLowerCase() === "clear") {
+    } else if (value.toLowerCase() === 'clear') {
       setTerminalLog([]);
     } else {
       setTerminalLog([...terminalLog, argumentLog]);
@@ -116,7 +116,7 @@ export default function Terminal() {
   };
 
   const logs = terminalLog.map((log, i) => {
-    if (log.messageType === "Argument") {
+    if (log.messageType === 'Argument') {
       return (
         <div css={terminalLogMessageContainer}>
           <div css={argumentMessageIcon}> &#60; </div>
@@ -128,7 +128,7 @@ export default function Terminal() {
         <div key={i} css={terminalLogMessageContainer}>
           {log.message.map((message, y) => {
             return (
-              <span css={folderMessageColor} key={i + "," + y}>
+              <span css={folderMessageColor} key={i + ',' + y}>
                 {message}
               </span>
             );
